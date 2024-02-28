@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%=csrfToken%>" />
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<style>
+    /* Container styles */
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    /* Table styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #ffffff;
+        box-shadow: 0 0 10px skyblue;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    th,
+    td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    th {
+        background-color: skyblue;
+        font-weight: bold;
+    }
+
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    /* Heading styles */
+    h1 {
+        text-align: center;
+        color: #333333;
+        margin-bottom: 20px;
+    }
+
+    /* No sessions message */
+    .no-sessions {
+        text-align: center;
+        font-style: italic;
+        color: #888888;
+        margin-top: 20px;
+    }
+
+    .empty-slots {
+        font-size: 12px;
+        color: #888888;
+        display: inline-block;
+        margin-left: 10px;
+    }
+
+    .joined-status {
+        font-size: 12px;
+        color: green;
+    }
+
+    .past-session {
+        color: red;
+    }
+
+    .past-session a {
+        pointer-events: none;
+        color: #888888;
+        cursor: not-allowed;
+    }
+
+    /* Navigation bar styles */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        background-color: #f3f3f3;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-brand {
+        font-size: 24px;
+        font-weight: bold;
+        color: #333333;
+        text-decoration: none;
+    }
+
+    .navbar-links a {
+        margin-left: 10px;
+        color: #333333;
+        text-decoration: none;
+    }
+
+    .navbar-links a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="container">
+    <nav class="navbar">
+        <a href="/player" class="navbar-brand">Sports-scheduler</a>
+        <div class="navbar-links">
+            <a href="/cancel-sessions" class="navbar-link">Cancelled Sessions</a>
+            <a href="/mysession">My sessions</a>
+            <a href="/joinedsessions">Joined Sessions</a>
+        </div>
+    </nav>
+    <h1>
+        <%= title %>
+    </h1>
+    <h2 class="mb-4">Available <%= sportName %> Sessions</h2>
+    <div class="mb-4">
+        <a href="/previous-sessions?sportname=<%=sportName%>"
+            class="text-white bg-orange-600 px-5 py-1.5 rounded font-medium mr-4">Previous Sessions</a>
+        <a href="/create-session?sportname=<%=sportName%>"
+            class="text-white bg-green-600 px-5 py-1.5 rounded font-medium">Create a Session</a>
+    </div>
+    <a href="/player" class="text-black-600 mb-4">Back</a>
+    <% if (data.length===0) { %>
+        <p class="no-sessions">No sessions available.</p>
+        <% } else { %>
+            <% data.forEach(session=> { %>
+                <% const hasJoined=session.joined ? session.joined.includes(loggedInUser) : false; %>
+                    <% const sessionTime=new Date(session.time); %>
+                        <% const currentTime=new Date();
+                        currentTime.setHours(currentTime.getHours() + 5);
+currentTime.setMinutes(currentTime.getMinutes() + 30); %>
+                            <% const isPastSession=sessionTime < currentTime; %>
+                                <% if (!session.cancel_status && !isPastSession) { %>
+                                    <div>
+                                        <table>
+                                            <thead>
+                                                <tr>
+                                                    <th class="border-b-2">ID</th>
+                                                    <th class="border-b-2">Venue</th>
+                                                    <th class="border-b-2">Number of Teams</th>
+                                                    <th class="border-b-2">Number of Players</th>
+                                                    <th class="border-b-2">Time</th>
+                                                    <th class="border-b-2">Organizer</th>
+                                                    <th class="border-b-2">Join</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="border-b">
+                                                        <%= session.id %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                        <%= session.venue %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                        <%= session.teamcount %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                        <%= session.playercount %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                        <%= session.time.toLocaleString('en-US', { weekday: 'long' ,
+                                                            month: 'long' , day: 'numeric' , year: 'numeric' ,
+                                                            hour: 'numeric' , minute: 'numeric' , hour12: true }) %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                            <% const organizer=userIdUsernameArray.find(user=> user.userId === session.userId); %>
+                                                                <%= organizer ? organizer.username : 'Unknown Organizer' %>
+                                                    </td>
+                                                    <td class="border-b">
+                                                        <% const emptySlots=session.playercount - (session.playernames ?
+                                                            session.playernames.split(',') : 0).length; %>
+                                                            <% if (emptySlots> 0) { %>
+                                                                <% if (hasJoined) { %>
+                                                                    <span class="joined-status">Joined</span>
+                                                                    <% } else { %>
+                                                                        <a href="/join?sessionId=<%= session.id %>&username=<%= username %>"
+                                                                            class="text-blue-500">Join</a>
+                                                                        <span class="empty-slots">
+                                                                            <%= emptySlots %> empty slots
+                                                                        </span>
+                                                                        <% } %>
+                                                                            <% } else { %>
+                                                                                <span class="empty-slots">No slots
+                                                                                    available</span>
+                                                                                <% } %>
+                                                    </td> 
+                                                </tr>
+                                                 <td colspan="7" class="td">
+                                                        <div class="flex">
+                                                            <% const playerNames=session.playernames.split(","); %>
+                                                                <h3 class="text-white bg-cyan-500 shadow-lg shadow-cyan-500/50 px-5 py-1.5 rounded font-medium ">PLAYERNAMES
+                                                                </h3>&nbsp;
+                                                                <% playerNames.forEach(name=> { %>
+                                                                    <span>
+                                                                        <%= name.trim() %>,
+                                                                    </span>
+                                                                    <% }); %>
+                                                        </div>
+                                                    </td>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } %>
+                                        <% }); %>
+                                            <% } %>
+</div>
+
+</html>

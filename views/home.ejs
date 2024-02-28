@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%=csrfToken%>" />
+    <title>Sports-Scheduler App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <script>
+        var token = document
+            .querySelector('meta[name="csrf-token"]')
+            .getAttribute("content");
+            console.log(token)
+        function deleteSport(id) {
+            fetch(`/admin/${id}`, {
+                method: "delete",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    "_csrf": token
+                })
+            })
+                .then((res) => {
+                    if (res.ok) {
+                        window.location.reload();
+                    }
+                })
+                .catch((err) => console.error(err));
+        }
+    </script>
+</head>
+
+<body>
+    <div style="text-align: center; font-weight: bold; padding: 10px; background-color: #eee;">
+        <%=username %> &nbsp YOU ARE ADMIN NOW!! YOU CAN CREATE A SPORT, DELETE A SPORT, CREATE A SESSION
+    </div>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+           <style>
+    /* Container styles */
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #003366;
+        padding: 10px;
+    }
+
+    .navbar a {
+        color: white;
+        text-decoration: none;
+        margin-right: 10px;
+    }
+
+    .navbar a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="navbar">
+    <div>
+        <a href="/reports">Reports</a>
+        <a href="/mysession">My sessions</a>
+    </div>
+    <div>
+        <a href="/signout">Sign Out</a>
+    </div>
+    <div>
+        <a href="/player">Continue as a Player</a>
+    </div>
+</div>
+
+            <form action="/admin" method="post">
+                <div class="py-3">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                    <p class="py-2">Want to create a sport?</p>
+                    <div class="flex-auto">
+                        <input type="number" name="id" placeholder="Enter the ID"
+                            class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm mb-2" required />
+                    </div>
+                    <div class="flex-auto">
+                        <input type="text" name="sport_name" placeholder="Enter the sport name!"
+                            class="border border-gray-300 rounded text-gray-900 w-full p-2 text-sm mb-2" required />
+                    </div>
+                    <div class="flex-none">
+                        <button type="submit"
+                            class="bg-blue-600 text-white px-5 py-1.5 rounded font-medium mb-2">Create</button>
+                    </div>
+                </div>
+            </form>
+            <%- include("admin.ejs",{title:"CREATED SPORTS",data:csports}) %>
+        </div>
+    </div>
+</body>
+
+</html>

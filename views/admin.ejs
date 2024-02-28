@@ -1,0 +1,77 @@
+<head>
+    <style>
+        .sport-content {
+            max-height: 200px;
+            /* Adjust the height as per your requirements */
+            overflow-y: scroll;
+        }
+
+        .sport-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px;
+        }
+
+        .sport-name {
+            position: relative;
+            display: inline-block;
+        }
+
+        .sport-name:hover .trash-icon {
+            display: inline;
+        }
+
+        .trash-icon {
+            display: none;
+        }
+
+        .create-session {
+            display: inline;
+            margin-left: 8px;
+            color: blue;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<div class="sport-list">
+    <h5>
+        <%= title %> <span class="bg-gray-100 ml-2 px-2">
+                <%= data.length %>
+            </span>
+    </h5>
+    <div class="sport-content">
+        <% for (var i=0; i < data.length; i++) { %>
+            <div class="sport-item">
+                <div class="sport-name">
+                    <% if (data[i].sport_name==='cricket' ) { %>
+                        <span class="text-2xl">&#127951;</span> <!-- Cricket Bat Icon -->
+                        <% } else if (data[i].sport_name==='football' ) { %>
+                            <span class="text-2xl">&#9917;</span> <!-- Football Icon -->
+                            <% } else if (data[i].sport_name==='basketball' ) { %>
+                                <span class="text-2xl">&#127936;</span> <!-- Basketball Icon -->
+                                <% } else if (data[i].sport_name==='tennis' ) { %>
+                                    <span class="text-2xl">&#127934;</span> <!-- Tennis Icon -->
+                                    <% } else { %>
+                                        <span class="text-2xl">&#127941;</span> <!-- Default Icon -->
+                                        <% } %>
+                                            <span class="ml-2 font-bold">
+                                                <%= data[i].id %>
+                                            </span>:&nbsp;<%= data[i].sport_name %>
+                                                <a href="#" class="trash-icon"
+                                                    onclick="deleteSport('<%= data[i].id %>')">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                                                        viewBox="0 0 24 24" stroke="currentColor" class="w-4 h-4">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="1.5"
+                                                            d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                                    </svg>
+                                                </a>
+                </div>
+                <a href="/create-session?sportname=<%= data[i].sport_name %>" class="create-session text-blue-600">Create
+                    Session</a>
+            </div>
+            <% } %>
+    </div>
+</div>

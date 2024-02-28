@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+        <%= title %>
+    </title>
+    <style>
+        .hero-image {
+            background-image: url("https://images.unsplash.com/photo-1579548122080-c35fd6820ecb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1770&q=80");
+           position: absolute;
+            top: 0;
+            left: 0;
+            right:0;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hero-image">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-center text--700 text-3xl font-bold mb-8">
+                <%= title %>
+            </h1>
+            <a href="/player" class="text-white bg-green-600 px-4 py-1 rounded font-medium mr-4">Back</a>
+
+            <% if (data.length===0) { %>
+                <p class="text-center text-white-500 mt-8">No sessions available.</p>
+                <% } else { %>
+                    <div class="flex flex-wrap mt-8">
+                        <% data.forEach(session=> { %>
+                            <% const hasJoined=session.joined ? session.joined.includes(loggedInUser) : false; %>
+                                <% if (hasJoined) { %>
+                                    <% if (session.cancel_status) { %>
+                                        <div
+                                            class="bg-white shadow-md rounded-lg p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mx-2">
+                                            <h2 class="text-center text-lg font-bold mb-2">
+                                                <%= session.id %>
+                                                    <% if (session.sport_name) { %>
+                                                        <span class="text-sm text-gray-500 ml-2">
+                                                            <%= session.sport_name %>
+                                                        </span>
+                                                        <% } %>
+                                            </h2>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Venue:</span>
+                                                <span class="ml-1">
+                                                    <%= session.venue %>
+                                                </span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Number of Teams:</span>
+                                                <span class="ml-1">
+                                                    <%= session.teamcount %>
+                                                </span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Number of Players:</span>
+                                                <span class="ml-1">
+                                                    <%= session.playercount %>
+                                                </span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Player Names:</span>
+                                                <div class="ml-1">
+                                                    <% const playerNames=session.playernames.split(","); %>
+                                                        <% playerNames.forEach(name=> { %>
+                                                            <span class="inline-block bg-gray-200 px-2 py-1 rounded-lg mr-2">
+                                                                <%= name.trim() %>
+                                                            </span>
+                                                            <% }); %>
+                                                </div>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Time:</span>
+                                                <span class="ml-1">
+                                                    <%= session.time.toLocaleString('en-US', { weekday: 'long' ,
+                                                            month: 'long' , day: 'numeric' , year: 'numeric' ,
+                                                            hour: 'numeric' , minute: 'numeric' , hour12: true }) %>
+                                                </span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <span class="font-bold">Organizer:</span>
+                                                <% const organizer=userIdUsernameArray.find(user=> user.userId === session.userId); %>
+                                                    <%= organizer ? organizer.username : 'Unknown Organizer' %>
+                                            </div>
+                                            <div class="text-center text-green-500 font-bold">Joined</div>
+                                            <div class="text-center text-red-500 font-bold mt-4">Sorry, this session has
+                                                been cancelled due to the following reason:</div>
+                                            <div class="text-center">
+                                                <%= session.cancelled_reason %>
+                                            </div>
+                                        </div>
+                                        <% } else { %>
+                                            <div
+                                                class="bg-white shadow-md rounded-lg p-4 w-full sm:w-1/2 md:w-1/3 lg:w-1/4 mx-2">
+                                                <h2 class="text-center text-lg font-bold mb-2">
+                                                    <%= session.id %>
+                                                        <% if (session.sport_name) { %>
+                                                            <span class="text-sm text-gray-500 ml-2">
+                                                                <%= session.sport_name %>
+                                                            </span>
+                                                            <% } %>
+                                                </h2>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Venue:</span>
+                                                    <span class="ml-1">
+                                                        <%= session.venue %>
+                                                    </span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Number of Teams:</span>
+                                                    <span class="ml-1">
+                                                        <%= session.teamcount %>
+                                                    </span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Number of Players:</span>
+                                                    <span class="ml-1">
+                                                        <%= session.playercount %>
+                                                    </span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Player Names:</span>
+                                                    <div class="ml-1">
+                                                        <% const playerNames=session.playernames.split(","); %>
+                                                            <% playerNames.forEach(name=> { %>
+                                                                <span
+                                                                    class="inline-block bg-gray-200 px-2 py-1 rounded-lg mr-2">
+                                                                    <%= name.trim() %>
+                                                                </span>
+                                                                <% }); %>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Time:</span>
+                                                    <span class="ml-1">
+                                                        <%= session.time.toLocaleString('en-US', { weekday: 'long' ,
+                                                            month: 'long' , day: 'numeric' , year: 'numeric' ,
+                                                            hour: 'numeric' , minute: 'numeric' , hour12: true }) %>
+                                                    </span>
+                                                </div>
+                                                <div class="mb-2">
+                                                    <span class="font-bold">Organizer:</span>
+                                                    <% const organizer=userIdUsernameArray.find(user=> user.userId === session.userId); %>
+                                                        <%= organizer ? organizer.username : 'Unknown Organizer' %>
+        
+                                                </div>
+                                                <div class="text-center text-green-500 font-bold">Joined</div>
+                                            </div>
+                                            <% } %>
+                                                <% } %>
+                                                    <% }); %>
+                    </div>
+                    <% } %>
+        </div>
+    </div>
+</body>
+
+</html>

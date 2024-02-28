@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+    <div class="grid grid-cols-6">
+        <div class="col-start-3 col-span-2">
+            <%- include('header.ejs') %>
+                <h6 class="py-4">Signup as a new user</h6>
+                <form action="/users" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                    <p class="py-2"><a href="/login" class="text-green-600">Already had an account?</a></p>
+                    <div class="py-3">
+                        <label for="firstName">First Name:</label>
+                        <input type="text" name="firstName"
+                            class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="py-3">
+                        <label for="lastName">Last Name:</label>
+                        <input type="text" name="lastName"
+                            class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="py-3">
+                        <label for="email">Email:</label>
+                        <input type="email" name="email"
+                            class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="py-3">
+                        <label for="password">Password:</label>
+                        <input type="password" name="password"
+                            class="border border-gray-300 text-gray-900 rounded p-2 w-full">
+                    </div>
+                    <div class="py-3">
+                        <button type="submit"
+                            class="text-white bg-green-600 hover:bg-green-800 font-medium rounded px-5 py-2">Sign
+                            Up</button>
+                    </div>
+                </form>
+                <div class="notify">
+                    <div class="error">
+                        <% if (messages && messages.error && messages.error.length> 0) { %>
+                            <% messages.error.forEach(function(error) { %>
+                                <p>
+                                    <%= error %>
+                                </p>
+                                <% }); %>
+                                    <% } %>
+
+                    </div>
+                    <div class="success">
+                        <% if (messages && messages.success && messages.success.length> 0) { %>
+                            <% messages.success.forEach((success)=> { %>
+                                <p>
+                                    <%= success %>
+                                </p>
+                                <% }); %>
+                                    <% } %>
+
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+
+</html>

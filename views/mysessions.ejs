@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <title>
+        <%= title %>
+    </title>
+    <style>
+        /* Add your custom styles here if needed */
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto px-4 py-8">
+        <div class="flex items-center justify-between mb-4">
+            <a href="/player" class="text-black-600">Back</a>
+            <a href="/signout"
+                class="bg-white text-blue-600 px-4 py-2 rounded font-medium shadow hover:bg-blue-600 hover:text-white">Sign
+                Out</a>
+        </div>
+        <div class="bg-white shadow rounded px-8 py-6">
+            <nav class="flex justify-between items-center mb-8 bg-blue-500 text-white px-6 py-3 rounded">
+                <a href="/player" class="text-2xl font-bold">Sports Scheduler</a>
+                <div class="flex space-x-4">
+                    <a href="/cancel-sessions" class="text-gray-200 hover:text-white">Cancelled Sessions</a>
+                    <a href="/joinedsessions" class="text-gray-200 hover:text-white">Joined Sessions</a>
+                </div>
+            </nav>
+            <% if (data.length===0) { %>
+                <p class="text-gray-500 text-center">No sessions available.</p>
+                <% } else { %>
+                    <% const groupedSessions={}; %>
+                        <% data.forEach(session=> { %>
+                            <% const sportName=session.sport_name; %>
+                                <% if (!groupedSessions[sportName]) { %>
+                                    <% groupedSessions[sportName]=[]; %>
+                                        <% } %>
+                                            <% groupedSessions[sportName].push(session); %>
+                                                <% }); %>
+                                                    <% for (const sportName in groupedSessions) { %>
+                                                        <% const sessions=groupedSessions[sportName]; %>
+                                                            <h1 class="text-2xl font-bold mb-4">
+                                                                <%= sportName %>
+                                                            </h1>
+                                                            <div class="overflow-x-auto">
+                                                                <table class="w-full table-auto mb-8">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="px-4 py-2">Venue</th>
+                                                                            <th class="px-4 py-2">Teams</th>
+                                                                            <th class="px-4 py-2">Players</th>
+                                                                            <th class="px-4 py-2">Time</th>
+                                                                            <th class="px-4 py-2">Organizer</th>
+                                                                            <th class="px-4 py-2">Slots</th>
+                                                                            <th class="px-4 py-2">Action</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        <% sessions.forEach(session=> { %>
+                                                                            <tr <% if (session.cancel_status) { %>
+                                                                                class="bg-red-100"<% } %>>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <%= session.venue %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <%= session.teamcount %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <%= session.playercount %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <%= session.time.toLocaleString('en-US', { weekday: 'long' ,
+                                                            month: 'long' , day: 'numeric' , year: 'numeric' ,
+                                                            hour: 'numeric' , minute: 'numeric' , hour12: true })
+                                                                                            %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <%= username %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <% const
+                                                                                            emptySlots=session.playercount
+                                                                                            - (session.playernames ?
+                                                                                            session.playernames.split(',').length
+                                                                                            : 0); %>
+                                                                                            <% if (emptySlots> 0) { %>
+                                                                                                <span
+                                                                                                    class="text-green-500">
+                                                                                                    <%= emptySlots %>
+                                                                                                        empty slots
+                                                                                                </span>
+                                                                                                <% } else { %>
+                                                                                                    <span
+                                                                                                        class="text-red-500">No
+                                                                                                        slots
+                                                                                                        available</span>
+                                                                                                    <% } %>
+                                                                                    </td>
+                                                                                    <td class="px-4 py-2">
+                                                                                        <% if (!session.cancel_status) {
+                                                                                            %>
+                                                                                            <a href="#"
+                                                                                                class="text-blue-600 hover:text-blue-800"
+                                                                                                onclick="toggleReasonInput('<%= session.id %>')">Cancel</a>
+                                                                                            <% } else { %>
+                                                                                                <span
+                                                                                                    class="text-red-600">Cancelled</span>
+                                                                                                <% } %>
+                                                                                                    <div class="reason-input hidden"
+                                                                                                        id="reason-input-<%= session.id %>">
+                                                                                                        <input
+                                                                                                            type="text"
+                                                                                                            placeholder="Reason"
+                                                                                                            class="border border-gray-300 rounded px-2 py-1 mt-2">
+                                                                                                        <button
+                                                                                                            class="bg-blue-600 text-white rounded px-4 py-2 mt-2"
+                                                                                                            onclick="cancelSession('<%= session.id %>')">Submit</button>
+                                                                                                    </div>
+                                                                                    </td>
+                                                                                   
+                                                                            </tr>
+                                                                            <td colspan="7" class="td">
+                                                                                <div class="flex">
+                                                                                    <% const playerNames=session.playernames.split(","); %>
+                                                                                        <h3 class="text-white bg-cyan-500 shadow-lg shadow-cyan-500/50 px-5 py-1 rounded font-medium ">PLAYERNAMES
+                                                                                        </h3>&nbsp;
+                                                                                        <% playerNames.forEach(name=> { %>
+                                                                                            <span>
+                                                                                                <%= name.trim() %>,
+                                                                                            </span>
+                                                                                            <% }); %>
+                                                                                </div>
+                                                                            </td>
+                                                                            <% if (session.cancel_status) { %>
+                                                                                <tr>
+                                                                                    <td colspan="8"
+                                                                                        class="text-sm italic text-red-900">
+                                                                                        Reason: <%=
+                                                                                            session.cancelled_reason %>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                <% } %>
+                                                                                    <% }); %>
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                            <% } %>
+                                                                <% } %>
+        </div>
+
+        <script>
+            var token = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+
+            function toggleReasonInput(sessionId) {
+                const reasonInput = document.getElementById(`reason-input-${sessionId}`);
+                reasonInput.classList.toggle('hidden');
+            }
+
+            function cancelSession(sessionId) {
+                const reasonInput = document.getElementById(`reason-input-${sessionId}`);
+                const reason = reasonInput.querySelector('input').value;
+
+                fetch(`/cancel-session?sessionId=${sessionId}&reason=${encodeURIComponent(reason)}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // Add any required headers for authentication or CSRF protection
+                        'csrf-token': token
+                    },
+                    body: JSON.stringify({
+                        "_csrf": token
+                    })
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            window.location.reload();
+                        } else {
+                            // Handle non-successful response, e.g., display an error message
+                            console.error('Failed to cancel session');
+                        }
+                    })
+                    .catch(error => {
+                        // Handle any errors that occur during the request
+                        console.error('Error cancelling session:', error);
+                    });
+            }
+        </script>
+    </div>
+</body>
+
+</html>

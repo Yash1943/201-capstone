@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <title>
+        <%= title %>
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+        /* ... */
+    </style>
+</head>
+
+<body class="bg-grey-900">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+    <div class="container mx-auto p-8">
+        <nav class="navbar flex justify-between items-center p-4 bg-green-100 shadow">
+            
+            <a href="/player" class="navbar-brand text-2xl font-bold text-gray-800">Sports-scheduler</a>
+            <div class="navbar-links flex items-center space-x-4">
+                <% if(admin==true) {%>
+                <a href="/admin" class="text-sm text-gray-800 hover:text-gray-600 transition duration-300">Admin Page</a>
+                <% } %>
+                 <a href="/mysession" class="text-sm text-gray-800 hover:text-gray-600 transition duration-300">My
+                    Sessions</a>
+                <a href="/joinedsessions"
+                    class="text-sm text-gray-800 hover:text-gray-600 transition duration-300">Joined Sessions</a>
+                <a href="/cancel-sessions"
+                    class="text-sm text-gray-800 hover:text-gray-600 transition duration-300">Cancelled Sessions</a>
+                <div class="relative">
+                    <!-- Account icon -->
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer text-gray-800" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" onclick="toggleDropdown()">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                    <!-- Dropdown menu -->
+                    <div id="accountDropdown"
+                        class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-2 z-10">
+                        <a href="/signout"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">Sign
+                            Out</a>
+                        <a href="/change-password"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900">Change
+                            Password</a>
+                    </div>
+                </div>
+               
+            </div>
+        </nav>
+
+        <% if (allsports.length> 0) { %>
+            <h2 class="text-2xl text-red-900 mb-4">List of Sports:</h2>
+            <ul class="sports-list">
+                <% let displayedSports=[]; %>
+                    <% allsports.forEach(function(sport) { %>
+                        <% if (!displayedSports.includes(sport.sport_name)) { %>
+                            <li>
+                                <a href="/sessions?sport=<%= sport.sport_name %>"
+                                    class="text-white bg-cyan-500 shadow-lg shadow-cyan-500/50 px-5 py-1.5 rounded font-medium hover:underline ">
+                                    <%= sport.sport_name %>
+                                </a>
+                            </li><br>
+                            <% displayedSports.push(sport.sport_name); %>
+                                <% } %>
+                                    <% }); %>
+            </ul>
+            <% } else { %>
+                <p class="text-gray-500 text-center mt-8">No sports available.</p>
+                <% } %>
+    </div>
+</body>
+
+<script>
+    function toggleDropdown() {
+        var dropdown = document.getElementById("accountDropdown");
+        dropdown.classList.toggle("hidden");
+    }
+</script>
+
+</html>

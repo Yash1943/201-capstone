@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+
+    <title>Welcome</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #fff;
+        }
+
+        .content {
+            text-align: center;
+        }
+
+        .slideshow-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .slideshow-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .slideshow-image.active {
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <a href="/signout"
+        class="fixed top-4 right-4 bg-white text-blue-600 px-4 py-2 rounded font-medium shadow hover:bg-blue-600 hover:text-white">Sign
+        Out</a>
+
+    <div class="content">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <div class="w-full p-4">
+            <h1 class="text-3xl font-bold mb-5">Welcome <%= username %>!</h1>
+            <p class="mb-4">Please select your role:</p>
+            <%console.log(admin) %>
+            <%if (admin==true) { %>
+                <a href="/admin" class="bg-blue-600 text-white px-5 py-1.5 rounded font-medium mb-4">Sport Organizer</a>
+            <%}%>
+            <a href="/player" class="bg-blue-600 text-white px-5 py-1.5 rounded font-medium ml-4 mb-4">Player</a>
+        </div>
+    </div>
+
+    <div class="slideshow-container">
+        <img class="slideshow-image active"
+            src="https://images.unsplash.com/photo-1572181804423-c5df037abf13?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDE0fHx8ZW58MHx8fHx8&auto=format&fit=crop&w=600&q=60"
+            alt="Slideshow Image 1">
+        <img class="slideshow-image"
+            src="https://images.unsplash.com/flagged/photo-1576972405668-2d020a01cbfa?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fHRlbm5pc3xlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=600&q=60"
+            alt="Slideshow Image 2">
+        <img class="slideshow-image"
+            src="https://images.unsplash.com/photo-1589801258579-18e091f4ca26?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNyaWNrZXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=600&q=60"
+            alt="Slideshow Image 3">
+    </div>
+
+    <script>
+        const images = document.querySelectorAll('.slideshow-image');
+        let currentIndex = 0;
+
+        setInterval(() => {
+            images[currentIndex].classList.remove('active');
+            currentIndex = (currentIndex + 1) % images.length;
+            images[currentIndex].classList.add('active');
+        }, 3000);
+
+    </script>
+</body>
+
+</html>

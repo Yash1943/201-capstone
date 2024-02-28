@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="<%= csrfToken %>" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Container styles */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Table styles */
+        .table {
+            width: 100%;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px skyblue;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .th,
+        .td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .th {
+            background-color: skyblue;
+            font-weight: bold;
+        }
+
+        .tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        /* Heading styles */
+        .h1 {
+            text-align: center;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        /* No sessions message */
+        .no-sessions {
+            text-align: center;
+            font-style: italic;
+            color: #888888;
+            margin-top: 20px;
+        }
+
+        .past-session {
+            color: red;
+        }
+
+        .past-session a {
+            pointer-events: none;
+            color: #888888;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <h1 class="text-3xl font-bold mb-6">Previous <%= sportname %> Sessions</h1>
+        <% if (data.length===0) { %>
+            <p class="no-sessions">No previous sessions available.</p>
+            <% } else { %>
+                <% const pastSessions=data.filter(session=> {
+                    const sessionTime = new Date(session.time);
+                    const currentTime = new Date();
+                    currentTime.setHours(currentTime.getHours() + 5);
+                    currentTime.setMinutes(currentTime.getMinutes() + 30);
+                    return sessionTime < currentTime && session.sport_name===sportname; }); %>
+                        <% if (pastSessions.length===0) { %>
+                            <p class="no-sessions">No past sessions available for <%= sportname %>.</p>
+                            <% } else { %>
+                                <div class="overflow-x-auto">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="th">ID</th>
+                                                <th class="th">Venue</th>
+                                                <th class="th">Number of Teams</th>
+                                                <th class="th">Number of Players</th>
+                                                <th class="th">Time</th>
+                                                <th class="th">Organizer</th>
+                                                <th class="th">Sportname</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="tbody">
+                                            <% pastSessions.forEach(session=> { %>
+                                                <tr class="past-session">
+                                                    <td class="td">
+                                                        <%= session.id %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <%= session.venue %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <%= session.teamcount %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <%= session.playercount %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <%= session.time.toLocaleString('en-US', { weekday: 'long' ,
+                                                            month: 'long' , day: 'numeric' , year: 'numeric' ,
+                                                            hour: 'numeric' , minute: 'numeric' , hour12: true }) %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <% const organizer=userIdUsernameArray.find(user=> user.userId === session.userId); %>
+                                                            <%= organizer ? organizer.username : 'Unknown Organizer' %>
+                                                    </td>
+                                                    <td class="td">
+                                                        <%= session.sport_name %>
+                                                    </td>
+                                                </tr>
+                                                <tr class="past-session">
+                                                    <td colspan="7" class="td">
+                                                        <div class="flex">
+                                                            <% const playerNames=session.playernames.split(","); %>
+                                                                <h3
+                                                                    class="text-white bg-cyan-500 shadow-lg shadow-cyan-500/50 px-5 py-1.5 rounded font-medium">
+                                                                    PLAYERNAMES
+                                                                </h3>&nbsp;
+                                                                <% playerNames.forEach(name=> { %>
+                                                                    <span>
+                                                                        <%= name.trim() %>,
+                                                                    </span>
+                                                                    <% }); %>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <% }); %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <% } %>
+                                    <% } %>
+    </div>
+</body>
+
+</html>
